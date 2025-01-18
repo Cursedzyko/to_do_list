@@ -1,5 +1,6 @@
 import "../index.css";
 import { useState } from "react";
+import CreateTask from "./CreateTask";
 
 const Profile = () => {
     const [activeCategory, setActiveCategory] = useState("Home");
@@ -10,6 +11,7 @@ const Profile = () => {
     ]);
 
     const [email] = useState("user@example.com");
+    const [showCreateTask, setShowCreateTask] = useState(false);
 
     const filteredTasks = tasks.filter((task) => task.category === activeCategory);
 
@@ -21,6 +23,11 @@ const Profile = () => {
             )
         );
     };
+
+    const addTask = (newTask) =>{
+        setTasks((prevTasks) => [...prevTasks, newTask]);
+        setShowCreateTask(false);
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -56,12 +63,20 @@ const Profile = () => {
 
                 {/* Tasks Box */}
                 <div className="w-full p-6 bg-gray-100 overflow-y-auto">
-                    <h2 className="mb-6 text-xl font-semibold">{activeCategory} Tasks</h2>
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-xl font-semibold">{activeCategory} Tasks</h2>
+                        <button onClick={() => setShowCreateTask(true)} className="bg-blue-300 p-2 rounded-2xl flex gap-3 text-gray-600 font-medium hover:text-black hover:bg-blue-400 transition ease-in-out delay-150 hover:scale-110">
+                            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="50" height="50" viewBox="0 0 48 48" className="h-6 w-6 fill-black">
+                                <path d="M 24 4 C 12.972066 4 4 12.972074 4 24 C 4 35.027926 12.972066 44 24 44 C 35.027934 44 44 35.027926 44 24 C 44 12.972074 35.027934 4 24 4 z M 24 7 C 33.406615 7 41 14.593391 41 24 C 41 33.406609 33.406615 41 24 41 C 14.593385 41 7 33.406609 7 24 C 7 14.593391 14.593385 7 24 7 z M 23.976562 13.978516 A 1.50015 1.50015 0 0 0 22.5 15.5 L 22.5 22.5 L 15.5 22.5 A 1.50015 1.50015 0 1 0 15.5 25.5 L 22.5 25.5 L 22.5 32.5 A 1.50015 1.50015 0 1 0 25.5 32.5 L 25.5 25.5 L 32.5 25.5 A 1.50015 1.50015 0 1 0 32.5 22.5 L 25.5 22.5 L 25.5 15.5 A 1.50015 1.50015 0 0 0 23.976562 13.978516 z"></path>
+                            </svg>
+                            Add task
+                        </button>
+                    </div>
                     <div className="space-y-4">
                         {filteredTasks.map((task) => (
                             <div
                                 key={task.id}
-                                className={`bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow flex items-center justify-between`}
+                                className={`bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow flex items-start justify-start flex-col`}
                             >
                                 <div className="flex items-center">
                                     <input
@@ -74,13 +89,18 @@ const Profile = () => {
                                         {task.title}
                                     </a>
                                 </div>
-                                <p className={`text-gray-600 ${task.done ? "line-through text-gray-500" : ""}`}>
-                                    {task.description}
-                                </p>
                             </div>
                         ))}
+
                     </div>
                 </div>
+
+                {showCreateTask && (
+                    <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                        <CreateTask onClose={() => setShowCreateTask(false)} onAddTask={addTask} activeCategory={activeCategory}/>
+                    </div>
+                )}
+
             </main>
         </div>
     );
