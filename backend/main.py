@@ -1,0 +1,28 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from database import connect_to_mongo, disconnect_from_mongo
+from routes.singup import router
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.on_event("startup")
+async def startup_event():
+    await connect_to_mongo()
+    
+@app.on_event("shutdown")
+async def shutdown_event():
+    await disconnect_from_mongo()
+
+app.include_router(router, tags=["Authentication"] )
+
+@app.get("/")
+async def root():
+    return {"hello" : "World!"}
