@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import connect_to_mongo, disconnect_from_mongo
 from routes.singup import router
+from routes.login import login_router
 
 app = FastAPI()
 
@@ -22,6 +23,7 @@ async def shutdown_event():
     await disconnect_from_mongo()
 
 app.include_router(router, tags=["Authentication"] )
+app.include_router(login_router, tags=["Login"])
 
 @app.get("/")
 async def root():

@@ -25,5 +25,5 @@ async def connect_to_mongo():
     
 async def disconnect_from_mongo():
     if Database.client:
-        await Database.client.close()
+        Database.client.close()
         print("Disconnected from MOngoDB")

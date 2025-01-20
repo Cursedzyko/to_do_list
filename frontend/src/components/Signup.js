@@ -19,7 +19,9 @@ const Signup = () => {
 
         try {
             const data = await singupUser(email, password);
-            setSuccessMessage(data.message);
+            console.log(data);
+            if (data.email)
+                setSuccessMessage("User been created successfully");
             setError(null)
         } catch (error)
         {
