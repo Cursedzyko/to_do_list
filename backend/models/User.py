@@ -13,10 +13,3 @@ class UserModel:
             "email": self.email,
             "password": self.password
         }
-
-    
-# class Task (BaseModel):
-#     title: str
-#     description: str
-#     category: str
-#     done: bool

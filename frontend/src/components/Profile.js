@@ -1,18 +1,13 @@
 import "../index.css";
 import { useEffect, useState } from "react";
 import CreateTask from "./CreateTask";
-import { profileUser } from "../api/api";
+import { profileUser, getTasks } from "../api/api";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
-import Signup from "./Signup";
 
 const Profile = () => {
     const [activeCategory, setActiveCategory] = useState("Home");
-    const [tasks, setTasks] = useState([
-        { id: 1, title: "Task 1", description: "This is task 1", category: "Home", done: false },
-        { id: 2, title: "Task 2", description: "This is task 2", category: "Projects", done: false },
-        { id: 3, title: "Task 3", description: "This is task 3", category: "Home", done: false },
-    ]);
+    const [tasks, setTasks] = useState([]);
 
     const [email, setEmail] = useState("");
     const [showCreateTask, setShowCreateTask] = useState(false);
@@ -20,7 +15,6 @@ const Profile = () => {
     const filteredTasks = tasks.filter((task) => task.category === activeCategory);
 
     const navigate = useNavigate();
-    // Toggle task status (done or not)
     const toggleTaskStatus = (taskId) => {
         setTasks((prevTasks) =>
             prevTasks.map((task) =>
@@ -41,19 +35,24 @@ const Profile = () => {
     }
 
     useEffect(() => {
-        const fetchProfile = async () => {
+        const fetchData = async () => {
             const token = Cookies.get("access_token");
             try {
-                const data = await profileUser(token);
-                console.log(data);
-                setEmail(data.email); 
+                const profileData = await profileUser(token);
+                setEmail(profileData.email);
+    
+                const taskData = await getTasks(token);
+                setTasks(taskData);
             } catch (error) {
-                console.error("Error fetching profile:", error);
+                console.error("Error fetching data:", error);
+                if (error.response && error.response.status === 401) {
+                    navigate("/");
+                }
             }
         };
     
-        fetchProfile();
-    }, []);
+        fetchData();
+    }, [navigate]);
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
             <header className="bg-gray-700 text-white py-4 px-6 flex justify-between items-center">
