@@ -1,14 +1,16 @@
 import "../index.css";
 import { useState } from "react";
-// import { loginUser } from "../api/api";
-import { Link } from "react-router-dom";
+import { loginUser } from "../api/api";
+import { Link, useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
+
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
-    const [successMessage, setSuccessMessage] = useState(null);
-
+    const [successMessage] = useState(null);
+    const navigate = useNavigate()
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -18,9 +20,15 @@ const Login = () => {
         }
 
         try {
-            // const data = await loginUser(email, password);
-            // setSuccessMessage(data.message);
+            const data = await loginUser(email, password);
+            if (data.access_token){
+                Cookies.set("access_token", data.access_token, {
+                    secure: true, 
+                    sameSite: "Strict",
+                });
+            }
             setError(null);
+            navigate("/profile")
         } catch (error) {
             setError(error.response ? error.response.data.detail : "Invalid email or password!");
         }

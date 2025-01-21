@@ -16,3 +16,28 @@ export const singupUser = async (email, password) =>{
         throw error.response ? error.response.data : "Something went wrong!";
     }
 };
+
+export const loginUser = async (email, password) => {
+    try{
+        const response = await API.post("/login", {"email": email, "password": password})
+        return response.data;
+    }catch (error)
+    {
+        throw error.response ? error.response.data : "Something went wrong!";
+    }
+
+}
+
+export const profileUser = async (token) => {
+    try{
+        const response = await API.get("/profile", {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    }catch (error)
+    {
+        throw error.response ? error.response.data : "Something went wrong!";
+    }
+}

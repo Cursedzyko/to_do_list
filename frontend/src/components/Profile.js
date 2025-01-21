@@ -1,6 +1,10 @@
 import "../index.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CreateTask from "./CreateTask";
+import { profileUser } from "../api/api";
+import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
+import Signup from "./Signup";
 
 const Profile = () => {
     const [activeCategory, setActiveCategory] = useState("Home");
@@ -10,11 +14,12 @@ const Profile = () => {
         { id: 3, title: "Task 3", description: "This is task 3", category: "Home", done: false },
     ]);
 
-    const [email] = useState("user@example.com");
+    const [email, setEmail] = useState("");
     const [showCreateTask, setShowCreateTask] = useState(false);
 
     const filteredTasks = tasks.filter((task) => task.category === activeCategory);
 
+    const navigate = useNavigate();
     // Toggle task status (done or not)
     const toggleTaskStatus = (taskId) => {
         setTasks((prevTasks) =>
@@ -29,13 +34,33 @@ const Profile = () => {
         setShowCreateTask(false);
     }
 
+    const singout = () =>{
+        Cookies.remove("access_token");
+
+        navigate("/");
+    }
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            const token = Cookies.get("access_token");
+            try {
+                const data = await profileUser(token);
+                console.log(data);
+                setEmail(data.email); 
+            } catch (error) {
+                console.error("Error fetching profile:", error);
+            }
+        };
+    
+        fetchProfile();
+    }, []);
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
             <header className="bg-gray-700 text-white py-4 px-6 flex justify-between items-center">
                 <h1 className="text-2xl font-bold">Task Manager</h1>
                 <div className="flex items-center">
                     <span className="mr-4">{email}</span>
-                    <button className="bg-red-600 px-4 py-1 text-white rounded-lg hover:bg-red-700">
+                    <button onClick={singout} className="bg-red-600 px-4 py-1 text-white rounded-lg hover:bg-red-700">
                         Sign Out
                     </button>
                 </div>

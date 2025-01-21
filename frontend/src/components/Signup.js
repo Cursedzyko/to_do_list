@@ -1,5 +1,6 @@
 import "../index.css";
 import {useState} from "react";
+import { useNavigate } from "react-router-dom";
 import { singupUser } from "../api/api";
 
 const Signup = () => {
@@ -7,7 +8,7 @@ const Signup = () => {
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState(null);
-
+    const navigate = useNavigate();
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -23,6 +24,7 @@ const Signup = () => {
             if (data.email)
                 setSuccessMessage("User been created successfully");
             setError(null)
+            navigate("/")
         } catch (error)
         {
             setError(error.response ? error.response.data.detail : "Something went wrong!")
