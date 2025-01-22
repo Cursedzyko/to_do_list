@@ -68,4 +68,16 @@ export const createTask = async (token, newTask) => {
         throw error.response ? error.response.data : "Something went wrong!";
     }
 };
+
+export const deleteTask = async (token, taskId) => {
+    const response = await API.delete(`/delete_task/${taskId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    if (response.status !== 204) {
+        throw new Error("Failed to delete task");
+    }
+};
+
     

@@ -26,8 +26,19 @@ class TaskCRUD:
     
     async def get_all_tasks(self, user_id: str) -> List[dict]:
         tasks = []
-        async for task in self.collection.find({"user_id": user_id}):
+        async for task in self.collection.find({"user_id": str(user_id)}):
             task["id"] = str(task.pop("_id"))
             task["user_id"] = str(task["user_id"])
             tasks.append(task)
         return tasks
+    
+    async def delete_task(self, user_id: str, task_id: str) -> int:
+        print(user_id)
+        print(type(user_id))
+        print(task_id)
+        print(type(task_id))
+        result = await self.collection.delete_one(
+            {"_id": ObjectId(task_id), "user_id": str(user_id)}
+        )
+        print(result.deleted_count)
+        return result.deleted_count
