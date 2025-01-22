@@ -1,7 +1,8 @@
 import "../index.css";
 import { useEffect, useState } from "react";
 import CreateTask from "./CreateTask";
-import { profileUser, getTasks, deleteTask as deleteTaskApi } from "../api/api"; // Import the deleteTask API
+import TaskDetail from "./TaskDetail"; // Import the TaskDetail component
+import { profileUser, getTasks, deleteTask as deleteTaskApi } from "../api/api";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 
@@ -10,6 +11,7 @@ const Profile = () => {
     const [tasks, setTasks] = useState([]);
     const [email, setEmail] = useState("");
     const [showCreateTask, setShowCreateTask] = useState(false);
+    const [selectedTask, setSelectedTask] = useState(null); // Track selected task
 
     const filteredTasks = tasks.filter((task) => task.category === activeCategory);
     const navigate = useNavigate();
@@ -32,7 +34,6 @@ const Profile = () => {
         try {
             await deleteTaskApi(token, taskId);
             setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
-
         } catch (error) {
             console.error("Error deleting task:", error);
         }
@@ -75,6 +76,10 @@ const Profile = () => {
                 </div>
             </header>
 
+            {selectedTask && (
+                <TaskDetail task={selectedTask} onClose={() => setSelectedTask(null)} />
+            )}
+
             <main className="flex flex-grow overflow-hidden">
                 {/* Sidebar */}
                 <div className="w-1/5 p-6 bg-gray-800 text-white">
@@ -113,19 +118,32 @@ const Profile = () => {
                         {filteredTasks.map((task) => (
                             <div
                                 key={task.id}
-                                className={`bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow flex items-start justify-between`}
+                                className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow flex items-start justify-between"
+                                
                             >
-                                <div className="flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        checked={task.done}
-                                        onChange={() => toggleTaskStatus(task.id)}
-                                        className="mr-4"
-                                    />
-                                    <span className={`text-lg font-semibold ${task.done ? "line-through text-gray-500" : ""}`}>
+                                <input
+                                    type="checkbox"
+                                    checked={task.done}
+                                    onChange={(e) => {
+                                        e.stopPropagation();
+                                        toggleTaskStatus(task.id);
+                                    }}
+                                    className="mr-4 floats-start h-7 w-4"
+                                />
+                                <div className="flex items-center  w-full"
+                                    onClick={() => setSelectedTask(task)}
+                                >
+                                    <span
+                                        className={`text-lg font-semibold flex-1 ${
+                                            task.done ? "line-through text-gray-500" : ""
+                                        }`}
+                                    >
                                         {task.title}
                                     </span>
                                 </div>
+                                <button>
+                                    edit
+                                </button>
                                 <button onClick={() => deleteTask(task.id)} className="text-red-500 hover:text-red-700">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-6 w-6">
                                         <path fill="currentColor" d="M9 3v1H4v2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3H9zm2 2h2v1h-2V5zM7 8h10v11H7V8zm2 2v7h2v-7H9zm4 0v7h2v-7h-2z"></path>
@@ -138,9 +156,20 @@ const Profile = () => {
 
                 {showCreateTask && (
                     <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                        <CreateTask onClose={() => setShowCreateTask(false)} onAddTask={addTask} activeCategory={activeCategory} />
+                        <CreateTask
+                            onClose={() => setShowCreateTask(false)}
+                            onAddTask={addTask}
+                            activeCategory={activeCategory}
+                        />
                     </div>
                 )}
+
+                {selectedTask && (
+                    <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                        <TaskDetail task={selectedTask} onClose={() => setSelectedTask(null)} />
+                    </div>
+                )}
+
             </main>
         </div>
     );
