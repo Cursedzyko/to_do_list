@@ -3,9 +3,10 @@ import { useEffect, useState } from "react";
 import CreateTask from "./CreateTask";
 import TaskDetail from "./TaskDetail";
 import EditTask from "./EditTask";
-import { profileUser, getTasks, deleteTask as deleteTaskApi } from "../api/api";
+import {  getTasks, deleteTask as deleteTaskApi } from "../api/api";
 import Cookies from "js-cookie";
-import { data, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { updateTask } from "../api/api";
 
 const Profile = () => {
     const [activeCategory, setActiveCategory] = useState("Home");
@@ -19,12 +20,25 @@ const Profile = () => {
     const filteredTasks = tasks.filter((task) => task.category === activeCategory);
     const navigate = useNavigate();
 
-    const toggleTaskStatus = (taskId) => {
-        setTasks((prevTasks) =>
-            prevTasks.map((task) =>
-                task.id === taskId ? { ...task, done: !task.done } : task
-            )
-        );
+    const toggleTaskStatus = async (task) => {
+        try
+        {
+            const token = Cookies.get("access_token");
+            const updatedTask = {
+                "title": task.title,
+                "description": task.description,
+                "category": task.category,
+                "done": !task.done
+            };
+            const taskResponse = await updateTask(token, task.id, updatedTask);
+            setTasks((prevTasks) =>
+                prevTasks.map((task) =>
+                    task.id === taskResponse.id ? { ...task, done: !task.done } : task
+                )
+            );
+        }catch (err) {
+            console.log(err.message || "Failed to update task.");
+        }
     };
 
 
@@ -133,7 +147,7 @@ const Profile = () => {
                                     checked={task.done}
                                     onChange={(e) => {
                                         e.stopPropagation();
-                                        toggleTaskStatus(task.id);
+                                        toggleTaskStatus(task);
                                     }}
                                     className="mr-4 floats-start h-7 w-4"
                                 />

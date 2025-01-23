@@ -93,7 +93,7 @@ const Login = () => {
                     </Link>
                 </div>
 
-                {/* OAuth Section */}
+                {/* OAuth Section
                 <div className="flex items-center justify-between mt-4">
                     <span className="w-1/5 border-b"></span>
                     <span className="text-xs text-gray-500 uppercase">Or</span>
@@ -112,7 +112,7 @@ const Login = () => {
                     >
                         GitHub
                     </a>
-                </div>
+                </div> */}
             </div>
         </div>
     );

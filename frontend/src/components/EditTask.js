@@ -18,6 +18,7 @@ const EditTask = ({ task, onClose, onUpdateTask }) => {
             return;
         }
         setCategory(task.category)
+        setDone(task.done)
         setError("");
         setLoading(true);
 
@@ -66,19 +67,6 @@ const EditTask = ({ task, onClose, onUpdateTask }) => {
                     onChange={(e) => setDescription(e.target.value)}
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                 />
-            </div>
-            <div className="mb-4">
-                <label htmlFor="done" className="block font-medium text-gray-700">
-                    Status
-                </label>
-                <input
-                    id="done"
-                    type="checkbox"
-                    checked={done}
-                    onChange={(e) => setDone(e.target.checked)}
-                    className="mt-1"
-                />
-                <span className="ml-2">{done ? "Completed" : "Pending"}</span>
             </div>
             <div className="flex justify-end gap-4">
                 <button
