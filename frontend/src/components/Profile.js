@@ -1,7 +1,8 @@
 import "../index.css";
 import { useEffect, useState } from "react";
 import CreateTask from "./CreateTask";
-import TaskDetail from "./TaskDetail"; // Import the TaskDetail component
+import TaskDetail from "./TaskDetail";
+import EditTask from "./EditTask";
 import { profileUser, getTasks, deleteTask as deleteTaskApi } from "../api/api";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +13,8 @@ const Profile = () => {
     const [email, setEmail] = useState("");
     const [showCreateTask, setShowCreateTask] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null); // Track selected task
+    const [editingTask, setEditingTask] = useState(null);
+
 
     const filteredTasks = tasks.filter((task) => task.category === activeCategory);
     const navigate = useNavigate();
@@ -22,6 +25,12 @@ const Profile = () => {
                 task.id === taskId ? { ...task, done: !task.done } : task
             )
         );
+    };
+
+
+
+    const handleEdit = (task) => {
+        setEditingTask(task);
     };
 
     const addTask = (newTask) => {
@@ -141,8 +150,18 @@ const Profile = () => {
                                         {task.title}
                                     </span>
                                 </div>
-                                <button>
-                                    edit
+                                <button
+                                    onClick={() => handleEdit(task)}
+                                    className="text-blue-500 hover:text-blue-700 flex items-center"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 24 24"
+                                        fill="currentColor"
+                                        className="h-6 w-6 mr-1"
+                                    >
+                                        <path d="M14.06 2.94a2.5 2.5 0 013.54 0l3.46 3.46a2.5 2.5 0 010 3.54l-9.01 9.01a1 1 0 01-.33.21l-5 2a1 1 0 01-1.28-1.28l2-5a1 1 0 01.21-.33l9.01-9.01zm2.12 1.41a.5.5 0 00-.71 0l-9.01 9.01-1.36 3.39 3.39-1.36 9.01-9.01a.5.5 0 000-.71l-3.46-3.46zm-7.94 10.6a1 1 0 011.42 1.42l-2 2a1 1 0 01-1.42-1.42l2-2z"></path>
+                                    </svg>
                                 </button>
                                 <button onClick={() => deleteTask(task.id)} className="text-red-500 hover:text-red-700">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-6 w-6">
@@ -170,6 +189,21 @@ const Profile = () => {
                     </div>
                 )}
 
+                {editingTask && (
+                    <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                        <EditTask
+                            task={editingTask}
+                            onClose={() => setEditingTask(null)}
+                            onUpdateTask={(updatedTask) => {
+                                setTasks((prevTasks) =>
+                                    prevTasks.map((task) =>
+                                        task.id === updatedTask.id ? updatedTask : task
+                                    )
+                                );
+                            }}
+                        />
+                    </div>
+                )}
             </main>
         </div>
     );

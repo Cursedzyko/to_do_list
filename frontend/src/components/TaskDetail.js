@@ -1,6 +1,6 @@
 import "../index.css";
 
-const TaskDetail = ({ task, onClose }) => {
+const TaskDetail = ({ task, onClose, }) => {
     if (!task) return null; // Do not render if no task is selected
 
     return (
