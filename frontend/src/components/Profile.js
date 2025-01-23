@@ -5,7 +5,7 @@ import TaskDetail from "./TaskDetail";
 import EditTask from "./EditTask";
 import { profileUser, getTasks, deleteTask as deleteTaskApi } from "../api/api";
 import Cookies from "js-cookie";
-import { useNavigate } from "react-router-dom";
+import { data, useNavigate } from "react-router-dom";
 
 const Profile = () => {
     const [activeCategory, setActiveCategory] = useState("Home");
@@ -57,11 +57,9 @@ const Profile = () => {
         const fetchData = async () => {
             const token = Cookies.get("access_token");
             try {
-                const profileData = await profileUser(token);
-                setEmail(profileData.email);
-
                 const taskData = await getTasks(token);
-                setTasks(taskData);
+                setTasks(taskData.tasks);
+                setEmail(taskData.email)
             } catch (error) {
                 console.error("Error fetching data:", error);
                 if (error.response && error.response.status === 401) {

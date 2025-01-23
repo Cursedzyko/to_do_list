@@ -18,7 +18,7 @@ class TaskCRUD:
     
     async def get_task(self, user_id: str,task_id: str) -> Optional[dict]:
         task = await self.collection.find_one(
-            {"_id": ObjectId(task_id), "user_id": user_id}  # Fetch task for the specific user
+            {"_id": ObjectId(task_id), "user_id": str(user_id)}  # Fetch task for the specific user
         )
         if task:
             task["id"] = str(task.pop("_id"))
@@ -33,12 +33,23 @@ class TaskCRUD:
         return tasks
     
     async def delete_task(self, user_id: str, task_id: str) -> int:
+        result = await self.collection.delete_one(
+            {"_id": ObjectId(task_id), "user_id": str(user_id)}
+        )
+        return result.deleted_count
+    
+    async def update_task(self, user_id: str, task_id: str, task_data: dict) -> Optional[dict]:
         print(user_id)
         print(type(user_id))
         print(task_id)
         print(type(task_id))
-        result = await self.collection.delete_one(
-            {"_id": ObjectId(task_id), "user_id": str(user_id)}
+        task_data["updated_at"] = datetime.now() 
+        result = await self.collection.update_one(
+            {"_id": ObjectId(task_id), "user_id": str(user_id)},
+            {"$set": task_data}
         )
-        print(result.deleted_count)
-        return result.deleted_count
+        print(result.modified_count)
+        if result.modified_count == 1:
+            updated_task = await self.get_task(user_id, task_id)
+            return updated_task
+        return None

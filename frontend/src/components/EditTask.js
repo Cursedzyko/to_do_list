@@ -1,8 +1,8 @@
 import { useState } from "react";
 import "../index.css";
 import PropTypes from "prop-types";
-// import Cookies from "js-cookie";
-// import { updateTask } from "../api/api";
+import Cookies from "js-cookie";
+import { updateTask } from "../api/api";
 
 const EditTask = ({ task, onClose, onUpdateTask }) => {
     const [title, setTitle] = useState(task.title);
@@ -21,23 +21,23 @@ const EditTask = ({ task, onClose, onUpdateTask }) => {
         setError("");
         setLoading(true);
 
-        // try {
-        //     const token = Cookies.get("access_token");
-        //     const updatedTask = {
-        //         title,
-        //         description,
-        //         category,
-        //         done,
-        //     };
-
-        //     const taskResponse = await updateTask(token, task.id, updatedTask);
-        //     onUpdateTask(taskResponse.task); // Update the parent state
-        //     setLoading(false);
-        //     onClose();
-        // } catch (err) {
-        //     setError(err.message || "Failed to update task.");
-        //     setLoading(false);
-        // }
+        try {
+            const token = Cookies.get("access_token");
+            const updatedTask = {
+                "title": title,
+                "description": description,
+                "category": category,
+                "done": done,
+            };
+            const taskResponse = await updateTask(token, task.id, updatedTask);
+            console.log(taskResponse.task)
+            onUpdateTask(updatedTask);
+            setLoading(false);
+            onClose();
+        } catch (err) {
+            setError(err.message || "Failed to update task.");
+            setLoading(false);
+        }
     };
 
     return (

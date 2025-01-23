@@ -79,5 +79,16 @@ export const deleteTask = async (token, taskId) => {
         throw new Error("Failed to delete task");
     }
 };
-
     
+export const updateTask = async (token, taskId, taskData) => {
+    const response = await API.put(
+        `/update_task/${taskId}`,
+        taskData,
+        {
+            headers: {
+            Authorization: `Bearer ${token}`,
+            },
+        }
+        );
+        return response.data;
+};

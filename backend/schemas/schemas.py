@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
 
 class UserCreate(BaseModel):
@@ -22,10 +22,19 @@ class TaskBase(BaseModel):
 class TaskCreate(TaskBase):
     pass
 
+class UpdateTask(TaskBase):
+    title: Optional[str]
+    description: Optional[str]
+    category: Optional[str]
+    done: Optional[bool]
 class TaskResponse(TaskBase):
     id : str
-    user_id: str
+    user_id: Optional[str]
 
     class Config:
         orm_mode = True
         allow_population_by_field_name = True
+        
+class TaskListResp(BaseModel):
+    tasks: List[TaskResponse]
+    email: str
